@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.leonidas.user.User;
 
 import jakarta.persistence.Column;
@@ -39,6 +40,7 @@ public class Group {
     private User admin;
 
     // Miembros del grupo
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "group_members",
