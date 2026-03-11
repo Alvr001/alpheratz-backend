@@ -2,7 +2,7 @@ package com.leonidas.websocket;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.leonidas.message.Message;
@@ -16,14 +16,13 @@ import lombok.RequiredArgsConstructor;
 public class ChatWebSocketHandler {
 
     private final MessageService messageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    // Cliente envía a: /app/chat/{groupId}
-    // Todos en el grupo reciben en: /topic/chat/{groupId}
     @MessageMapping("/chat/{groupId}")
-    @SendTo("/topic/chat/{groupId}")
-    public Message sendMessage(
+    public void sendMessage(
             @DestinationVariable Long groupId,
             SendMessageDto dto) {
-        return messageService.sendMessage(dto);
+        Message saved = messageService.sendMessage(dto);
+        messagingTemplate.convertAndSend("/topic/chat/" + groupId, saved);
     }
 }
