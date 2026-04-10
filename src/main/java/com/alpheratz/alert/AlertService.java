@@ -60,8 +60,11 @@ List<String> tokens = group.getMembers().stream()
     .map(User::getFcmToken)
     .filter(t -> t != null && !t.isBlank())
     .toList();
-
-fcmService.sendToMultiple(tokens, titulo, cuerpo);
+if (dto.level().name().equals("RED")) {
+    fcmService.sendAlertNotification(tokens, titulo, cuerpo);
+} else {
+    fcmService.sendToMultiple(tokens, titulo, cuerpo);
+}
 
         return saved;
     }
