@@ -1,13 +1,13 @@
-package com.leonidas;
+package com.alpheratz;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LeonidasApplicationTests {
+class AlpheratzApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }

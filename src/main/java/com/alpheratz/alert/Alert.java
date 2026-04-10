@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.alpheratz.group.Group;
 import com.alpheratz.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,18 +15,30 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
 @Table(name = "alerts")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Alert {
+
+    public enum AlertLevel  { RED, YELLOW, GREEN }
+    public enum AlertType   { ROBBERY, SUSPICIOUS, EMERGENCY, CLEARED }
+    public enum AlertStatus { ACTIVE, RESOLVED, FALSE_ALARM }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
+    @ManyToOne
+    @JoinColumn(name = "reporter_id", nullable = false)
+    private User reporter;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -35,50 +48,13 @@ public class Alert {
     @Column(nullable = false)
     private AlertType type;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String description;
-
-    // Ubicación opcional
-    private Double latitude;
-    private Double longitude;
-
-    @ManyToOne
-    @JoinColumn(name = "reporter_id", nullable = false)
-    private User reporter;
-
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AlertStatus status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.status = AlertStatus.ACTIVE;
-    }
-
-    public enum AlertLevel {
-        RED,    // Emergencia — robo, violencia
-        YELLOW, // Sospechoso — persona merodeando
-        GREEN   // Zona despejada — todo tranquilo
-    }
-
-    public enum AlertType {
-        ROBBERY,        // Robo
-        SUSPICIOUS,     // Persona sospechosa
-        EMERGENCY,      // Emergencia general
-        CLEARED         // Zona despejada
-    }
-
-    public enum AlertStatus {
-        ACTIVE,     // Alerta activa
-        RESOLVED,   // Resuelta
-        FALSE_ALARM // Falsa alarma
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AlertStatus status = AlertStatus.ACTIVE;
 }

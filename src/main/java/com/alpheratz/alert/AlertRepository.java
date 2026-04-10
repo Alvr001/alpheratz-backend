@@ -14,4 +14,6 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     // Alertas por nivel
     List<Alert> findByGroupIdAndLevel(Long groupId, Alert.AlertLevel level);
+
+    void deleteByGroupId(Long groupId);
 }

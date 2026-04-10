@@ -1,11 +1,11 @@
 package com.alpheratz.user;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +20,11 @@ public class UserController {
 
     private final UserService userService;
 
-    // GET /api/users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
 
-    // GET /api/users/{id}
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.findById(id)
@@ -34,17 +32,8 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // POST /api/users
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
-        if (userService.existsByPhone(request.phone())) {
-            return ResponseEntity.badRequest().build();
-        }
-        User created = userService.createUser(request.phone(), request.name());
-        return ResponseEntity.ok(created);
-    }
+    // POST /api/users eliminado — el registro ahora lo maneja AuthController
 
-    // PUT /api/users/{id}/name
     @PutMapping("/{id}/name")
     public ResponseEntity<User> updateName(
             @PathVariable Long id,
@@ -53,7 +42,21 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
-    // Records internos para los request bodies
-    record CreateUserRequest(String phone, String name) {}
+    @PutMapping("/{id}/photo")
+    public ResponseEntity<User> updatePhoto(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        User user = userService.updatePhoto(id, body.get("profilePhoto"));
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}/fcm-token")
+    public ResponseEntity<?> updateFcmToken(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        userService.updateFcmToken(id, body.get("fcmToken"));
+        return ResponseEntity.ok().build();
+    }
+
     record UpdateNameRequest(String name) {}
 }

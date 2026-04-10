@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.alpheratz.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +24,7 @@ import lombok.Data;
 @Entity
 @Table(name = "groups")
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Group {
 
     @Id
@@ -52,6 +54,19 @@ public class Group {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "group_photo", columnDefinition = "TEXT")
+    private String groupPhoto;
+
+    // Por defecto todos en true (igual que WhatsApp)
+    @Column(nullable = false)
+    private boolean canMembersEditInfo = true;
+
+    @Column(nullable = false)
+    private boolean canMembersSendMessages = true;
+
+    @Column(nullable = false)
+    private boolean canMembersAddMembers = true;
+    
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

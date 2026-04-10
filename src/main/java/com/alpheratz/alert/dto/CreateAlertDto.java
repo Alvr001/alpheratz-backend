@@ -1,14 +1,11 @@
 package com.alpheratz.alert.dto;
 
-import com.alpheratz.alert.Alert.AlertLevel;
-import com.alpheratz.alert.Alert.AlertType;
+import com.alpheratz.alert.Alert;
 
 public record CreateAlertDto(
-    AlertLevel level,
-    AlertType type,
-    String description,
-    Double latitude,
-    Double longitude,
+    Long groupId,
     Long reporterId,
-    Long groupId
+    Alert.AlertLevel level,
+    Alert.AlertType type,
+    String description
 ) {}
